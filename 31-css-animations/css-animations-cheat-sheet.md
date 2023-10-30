@@ -1,0 +1,20 @@
+| Property                      | Possible Values / Types                                  | Description                                                                                                 |
+|-------------------------------|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| `animation-name`              | `none`, `<custom-keyframe-name>`                         | Specifies the name of the keyframe you want to bind to the animation.                                       |
+| `animation-duration`          | `<time>` e.g., `2s`, `250ms`                             | Defines how long the animation should take to complete one cycle.                                           |
+| `animation-timing-function`   | `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `<cubic-bezier()>` | Describes the speed curve of the animation.                                                                |
+| `animation-delay`             | `<time>` e.g., `2s`, `250ms`                             | Specifies a delay before the animation starts.                                                              |
+| `animation-iteration-count`   | `<number>`, `infinite`                                   | Determines how many times the animation will run.                                                           |
+| `animation-direction`         | `normal`, `reverse`, `alternate`, `alternate-reverse`     | Defines the direction of the animation.                                                                     |
+| `animation-fill-mode`         | `none`, `forwards`, `backwards`, `both`                  | Specifies how the animation should apply styles to its target before and after execution.                   |
+| `animation-play-state`        | `running`, `paused`                                      | Specifies whether the animation is running or paused.                                                       |
+| `transform`                   | `translate()`, `rotate()`, `scale()`, `skew()`, `matrix()`, etc.   | Applies a 2D or 3D transformation to an element.                                                            |
+| `transform-origin`            | `<percentage>`, `<length>`, `left`, `center`, `right`, `top`, `bottom` | Allows you to change the position of transformed elements.                                                  |
+| `transition`                  | Shorthand for transition properties like `transition-property`, `transition-duration`, etc. | A shorthand property for setting the four transition properties into a single declaration.                  |
+| `transition-property`         | `none`, `all`, `<property-name>` e.g., `opacity`, `transform` | Specifies the name of the CSS property to which the transition effect is applied.                           |
+| `transition-duration`         | `<time>` e.g., `2s`, `250ms`                             | Defines how many seconds (s) or milliseconds (ms) a transition effect should take to complete.              |
+| `transition-timing-function`  | `linear`, `ease`, `ease-in`, `ease-out`, `ease-in-out`, `<cubic-bezier()>` | Specifies the speed curve of the transition effect.                                                        |
+| `transition-delay`            | `<time>` e.g., `2s`, `250ms`                             | Specifies a delay (in seconds or milliseconds) for the transition effect.                                   |
+| `@keyframes`                  | Defines the animation sequence                           | A rule which lets you create animations by gradually changing from one set of CSS styles to another.        |
+
+This table serves as a brief overview of CSS animation and transition properties. Always refer to the official documentation or detailed guides for a deep dive into each property's capabilities and nuances.
