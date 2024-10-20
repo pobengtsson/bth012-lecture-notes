@@ -7,6 +7,11 @@ let selectedPiece = null;
 let selectedPosition = null;
 let selectedPieceElement = null;
 let highlightedSquares = []; // Track highlighted squares
+let enPassantSquare = null; // Track en passant target square
+let castlingRights = {
+  white: { kingside: true, queenside: true },
+  black: { kingside: true, queenside: true }
+};
 
 const boardElement = document.getElementById('chess-board');
 const turnIndicator = document.getElementById('current-player');
@@ -32,40 +37,21 @@ boardElement.addEventListener('click', (e) => {
   const piece = board[row][col];
 
   if (selectedPiece) {
-    // Attempt to move the selected piece
     const validMoves = getValidMoves(board, selectedPiece, selectedPosition);
     const isValidMove = validMoves.some(move => move.row === row && move.col === col);
 
     if (isValidMove) {
-      // If there's an opponent's piece at the destination, capture it
-      if (board[row][col]) {
-        const capturedPiece = board[row][col];
-        addCapturedPiece(capturedPiece);
-      }
+      // Handle special moves
+      if (handleSpecialMoves(row, col)) return;
 
-      board[row][col] = selectedPiece;
-      board[selectedPosition.row][selectedPosition.col] = null;
-
-      // Clear the selected piece and highlight
-      clearSelectedPiece();
-      clearHighlightedMoves();
-
-      updateBoardUI(board, boardElement);
-      switchTurn(turnIndicator, currentPlayer);
-      currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-
-      if (isGameOver(board, currentPlayer)) {
-        alert(`${currentPlayer === 'white' ? 'Black' : 'White'} wins!`);
-        board = initializeBoard();
-        updateBoardUI(board, boardElement);
-      }
+      // Perform regular move
+      makeMove(row, col);
     } else {
-      // Invalid move, reset the selection
       clearSelectedPiece();
       clearHighlightedMoves();
     }
   } else if (piece && piece.color === currentPlayer) {
-    // Select the piece if it belongs to the current player (any type)
+    // Select the piece if it belongs to the current player
     selectedPiece = piece;
     selectedPosition = { row, col };
     selectedPieceElement = target.classList.contains('piece') ? target : target.firstChild;
@@ -82,6 +68,84 @@ boardElement.addEventListener('click', (e) => {
     }
   }
 });
+
+// Handle special moves like promotion, en passant, and castling
+function handleSpecialMoves(row, col) {
+  // Handle pawn promotion
+  if (selectedPiece.type === 'pawn' && (row === 0 || row === 7)) {
+    const promotionType = prompt('Promote to (queen, rook, bishop, knight):', 'queen');
+    if (promotionType) {
+      selectedPiece.type = promotionType;
+      makeMove(row, col);
+      return true;
+    }
+  }
+
+  // Handle en passant
+  if (selectedPiece.type === 'pawn' && enPassantSquare && row === enPassantSquare.row && col === enPassantSquare.col) {
+    board[selectedPosition.row][col] = null; // Remove the captured pawn
+    makeMove(row, col);
+    return true;
+  }
+
+  // Handle castling
+  if (selectedPiece.type === 'king' && Math.abs(col - selectedPosition.col) === 2) {
+    if (col === 6) { // Kingside castling
+      board[row][5] = board[row][7]; // Move rook
+      board[row][7] = null;
+    } else if (col === 2) { // Queenside castling
+      board[row][3] = board[row][0]; // Move rook
+      board[row][0] = null;
+    }
+    makeMove(row, col);
+    return true;
+  }
+
+  return false;
+}
+
+// Execute the move and update the game state
+function makeMove(row, col) {
+  // Handle en passant availability
+  if (selectedPiece.type === 'pawn' && Math.abs(row - selectedPosition.row) === 2) {
+    enPassantSquare = { row: (selectedPosition.row + row) / 2, col };
+  } else {
+    enPassantSquare = null;
+  }
+
+  // Update castling rights
+  updateCastlingRights(selectedPiece, selectedPosition);
+
+  // Move the piece on the board
+  board[row][col] = selectedPiece;
+  board[selectedPosition.row][selectedPosition.col] = null;
+
+  // Clear the selected piece and highlight
+  clearSelectedPiece();
+  clearHighlightedMoves();
+
+  updateBoardUI(board, boardElement);
+  switchTurn(turnIndicator, currentPlayer);
+  currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+  if (isGameOver(board, currentPlayer)) {
+    alert(`${currentPlayer === 'white' ? 'Black' : 'White'} wins!`);
+    board = initializeBoard();
+    updateBoardUI(board, boardElement);
+  }
+}
+
+// Update castling rights based on the move
+function updateCastlingRights(piece, position) {
+  if (piece.type === 'king') {
+    castlingRights[piece.color].kingside = false;
+    castlingRights[piece.color].queenside = false;
+  }
+  if (piece.type === 'rook') {
+    if (position.col === 0) castlingRights[piece.color].queenside = false;
+    if (position.col === 7) castlingRights[piece.color].kingside = false;
+  }
+}
 
 // Highlight valid moves
 function highlightValidMoves(validMoves) {
@@ -115,7 +179,7 @@ function addCapturedPiece(piece) {
   }
 }
 
-// Helper function to clear the selected piece highlight
+// Clear the selected piece highlight
 function clearSelectedPiece() {
   if (selectedPieceElement) {
     selectedPieceElement.classList.remove('selected-piece');
