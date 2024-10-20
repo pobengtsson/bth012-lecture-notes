@@ -18,11 +18,6 @@ export function getValidMoves(board, piece, position) {
   }
 }
 
-/**
- * Helper functions for piece-specific moves
- */
-
-// Pawn moves
 function getPawnMoves(board, { row, col }, color) {
   const moves = [];
   const direction = (color === 'white') ? -1 : 1; // White moves up, Black moves down
@@ -34,33 +29,38 @@ function getPawnMoves(board, { row, col }, color) {
 
   // Initial double move
   if ((row === 1 && color === 'black') || (row === 6 && color === 'white')) {
-    if (board[row + 2 * direction][col] === null) {
+    if (board[row + 2 * direction][col] === null && board[row + direction][col] === null) {
       moves.push({ row: row + 2 * direction, col });
     }
   }
 
-  // Capture diagonally
-  if (isWithinBounds(row + direction, col - 1) && board[row + direction][col - 1]?.color !== color) {
-    moves.push({ row: row + direction, col: col - 1 });
+  // Diagonal captures
+  if (isWithinBounds(row + direction, col - 1)) {
+    const diagonalLeft = board[row + direction][col - 1];
+    if (diagonalLeft && diagonalLeft.color !== color) {
+      moves.push({ row: row + direction, col: col - 1 });
+    }
   }
-  if (isWithinBounds(row + direction, col + 1) && board[row + direction][col + 1]?.color !== color) {
-    moves.push({ row: row + direction, col: col + 1 });
+  if (isWithinBounds(row + direction, col + 1)) {
+    const diagonalRight = board[row + direction][col + 1];
+    if (diagonalRight && diagonalRight.color !== color) {
+      moves.push({ row: row + direction, col: col + 1 });
+    }
   }
 
   return moves;
 }
 
-// Rook moves
+// Rook, Knight, Bishop, Queen, King Moves (unchanged)
 function getRookMoves(board, { row, col }, color) {
   const moves = [];
-  getLinearMoves(board, { row, col }, color, moves, [-1, 0]); // Up
-  getLinearMoves(board, { row, col }, color, moves, [1, 0]);  // Down
-  getLinearMoves(board, { row, col }, color, moves, [0, -1]); // Left
-  getLinearMoves(board, { row, col }, color, moves, [0, 1]);  // Right
+  getLinearMoves(board, { row, col }, color, moves, [-1, 0]);
+  getLinearMoves(board, { row, col }, color, moves, [1, 0]);
+  getLinearMoves(board, { row, col }, color, moves, [0, -1]);
+  getLinearMoves(board, { row, col }, color, moves, [0, 1]);
   return moves;
 }
 
-// Knight moves
 function getKnightMoves(board, { row, col }, color) {
   const moves = [];
   const knightJumps = [
@@ -71,7 +71,7 @@ function getKnightMoves(board, { row, col }, color) {
   knightJumps.forEach(([dr, dc]) => {
     const newRow = row + dr;
     const newCol = col + dc;
-    if (isWithinBounds(newRow, newCol) && (board[newRow][newCol] === null || board[newRow][newCol]?.color !== color)) {
+    if (isWithinBounds(newRow, newCol) && (!board[newRow][newCol] || board[newRow][newCol].color !== color)) {
       moves.push({ row: newRow, col: newCol });
     }
   });
@@ -79,17 +79,15 @@ function getKnightMoves(board, { row, col }, color) {
   return moves;
 }
 
-// Bishop moves
 function getBishopMoves(board, { row, col }, color) {
   const moves = [];
-  getLinearMoves(board, { row, col }, color, moves, [-1, -1]); // Up-left
-  getLinearMoves(board, { row, col }, color, moves, [-1, 1]);  // Up-right
-  getLinearMoves(board, { row, col }, color, moves, [1, -1]);  // Down-left
-  getLinearMoves(board, { row, col }, color, moves, [1, 1]);   // Down-right
+  getLinearMoves(board, { row, col }, color, moves, [-1, -1]);
+  getLinearMoves(board, { row, col }, color, moves, [-1, 1]);
+  getLinearMoves(board, { row, col }, color, moves, [1, -1]);
+  getLinearMoves(board, { row, col }, color, moves, [1, 1]);
   return moves;
 }
 
-// Queen moves (combines rook and bishop)
 function getQueenMoves(board, { row, col }, color) {
   return [
     ...getRookMoves(board, { row, col }, color),
@@ -97,18 +95,17 @@ function getQueenMoves(board, { row, col }, color) {
   ];
 }
 
-// King moves
 function getKingMoves(board, { row, col }, color) {
   const moves = [];
   const kingSteps = [
-    [-1, 0], [1, 0], [0, -1], [0, 1], // Vertical & horizontal
-    [-1, -1], [-1, 1], [1, -1], [1, 1] // Diagonals
+    [-1, 0], [1, 0], [0, -1], [0, 1],
+    [-1, -1], [-1, 1], [1, -1], [1, 1]
   ];
 
   kingSteps.forEach(([dr, dc]) => {
     const newRow = row + dr;
     const newCol = col + dc;
-    if (isWithinBounds(newRow, newCol) && (board[newRow][newCol] === null || board[newRow][newCol]?.color !== color)) {
+    if (isWithinBounds(newRow, newCol) && (!board[newRow][newCol] || board[newRow][newCol].color !== color)) {
       moves.push({ row: newRow, col: newCol });
     }
   });
@@ -116,9 +113,7 @@ function getKingMoves(board, { row, col }, color) {
   return moves;
 }
 
-/**
- * Helper function for linear moves (used by rook, bishop, and queen)
- */
+// Helper functions (unchanged)
 function getLinearMoves(board, startPos, color, moves, direction) {
   let [row, col] = [startPos.row, startPos.col];
   while (true) {
@@ -137,9 +132,6 @@ function getLinearMoves(board, startPos, color, moves, direction) {
   }
 }
 
-/**
- * Check if the given position is within board bounds
- */
 function isWithinBounds(row, col) {
   return row >= 0 && row < 8 && col >= 0 && col < 8;
 }

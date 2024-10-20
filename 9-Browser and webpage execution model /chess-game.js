@@ -6,11 +6,14 @@ let board = initializeBoard();
 let selectedPiece = null;
 let selectedPosition = null;
 let selectedPieceElement = null;
+let highlightedSquares = []; // Track highlighted squares
 
 const boardElement = document.getElementById('chess-board');
 const turnIndicator = document.getElementById('current-player');
 const capturedWhiteContainer = document.getElementById('captured-white');
 const capturedBlackContainer = document.getElementById('captured-black');
+const showMovesWhite = document.getElementById('show-moves-white');
+const showMovesBlack = document.getElementById('show-moves-black');
 
 // Set up initial board UI
 updateBoardUI(board, boardElement);
@@ -45,6 +48,7 @@ boardElement.addEventListener('click', (e) => {
 
       // Clear the selected piece and highlight
       clearSelectedPiece();
+      clearHighlightedMoves();
 
       updateBoardUI(board, boardElement);
       switchTurn(turnIndicator, currentPlayer);
@@ -58,6 +62,7 @@ boardElement.addEventListener('click', (e) => {
     } else {
       // Invalid move, reset the selection
       clearSelectedPiece();
+      clearHighlightedMoves();
     }
   } else if (piece && piece.color === currentPlayer) {
     // Select the piece if it belongs to the current player (any type)
@@ -67,8 +72,35 @@ boardElement.addEventListener('click', (e) => {
 
     // Add the selected-piece class to indicate selection
     selectedPieceElement.classList.add('selected-piece');
+
+    // Highlight valid moves if the toggle is enabled
+    const showMoves = (currentPlayer === 'white' && showMovesWhite.checked) ||
+      (currentPlayer === 'black' && showMovesBlack.checked);
+    if (showMoves) {
+      const validMoves = getValidMoves(board, selectedPiece, selectedPosition);
+      highlightValidMoves(validMoves);
+    }
   }
 });
+
+// Highlight valid moves
+function highlightValidMoves(validMoves) {
+  clearHighlightedMoves(); // Clear any previous highlights
+
+  validMoves.forEach(({ row, col }) => {
+    const square = boardElement.querySelector(`.square[data-row='${row}'][data-col='${col}']`);
+    if (square) {
+      square.classList.add('valid-move');
+      highlightedSquares.push(square);
+    }
+  });
+}
+
+// Clear highlighted moves
+function clearHighlightedMoves() {
+  highlightedSquares.forEach(square => square.classList.remove('valid-move'));
+  highlightedSquares = [];
+}
 
 // Add captured piece to the respective container
 function addCapturedPiece(piece) {

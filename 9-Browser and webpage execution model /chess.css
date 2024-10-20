@@ -10,6 +10,12 @@ h1 {
   margin-top: 20px;
 }
 
+.controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
 .game-container {
   display: flex;
   align-items: center;
@@ -30,10 +36,11 @@ h1 {
   align-items: center;
   justify-content: center;
   font-size: 3em;
-  /* Board pieces size */
   cursor: pointer;
   position: relative;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, border 0.3s;
+  box-sizing: border-box;
+  /* Ensure borders are within the square dimensions */
 }
 
 .white-square {
@@ -48,6 +55,11 @@ h1 {
   background-color: yellow;
 }
 
+/* New styling for valid move indication */
+.valid-move {
+  border: 2px solid green;
+}
+
 #turn-indicator {
   margin-top: 10px;
   font-size: 18px;
@@ -57,7 +69,6 @@ h1 {
   font-weight: bold;
 }
 
-/* Modified CSS for captured pieces containers */
 .captured-pieces {
   display: flex;
   flex-direction: column;
@@ -68,10 +79,8 @@ h1 {
   padding: 10px;
 }
 
-/* Captured piece style */
 .captured-piece {
   font-size: 2em;
-  /* Captured pieces size */
   margin: 5px;
 }
 
@@ -80,21 +89,20 @@ h1 {
   z-index: 1;
 }
 
-/* Only apply the glowing animation */
 .selected-piece {
-  animation: piece-glow 2s infinite;
+  animation: piece-glow 1s infinite;
 }
 
 @keyframes piece-glow {
   0% {
-    text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.4);
   }
 
   50% {
-    text-shadow: 0 0 25px rgba(255, 255, 0, 1);
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.75);
   }
 
   100% {
-    text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.4);
   }
 }
