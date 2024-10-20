@@ -5,10 +5,12 @@ let currentPlayer = 'white';
 let board = initializeBoard();
 let selectedPiece = null;
 let selectedPosition = null;
-let selectedPieceElement = null;  // Track selected piece element
+let selectedPieceElement = null;
 
 const boardElement = document.getElementById('chess-board');
 const turnIndicator = document.getElementById('current-player');
+const capturedWhiteContainer = document.getElementById('captured-white');
+const capturedBlackContainer = document.getElementById('captured-black');
 
 // Set up initial board UI
 updateBoardUI(board, boardElement);
@@ -32,6 +34,12 @@ boardElement.addEventListener('click', (e) => {
     const isValidMove = validMoves.some(move => move.row === row && move.col === col);
 
     if (isValidMove) {
+      // If there's an opponent's piece at the destination, capture it
+      if (board[row][col]) {
+        const capturedPiece = board[row][col];
+        addCapturedPiece(capturedPiece);
+      }
+
       board[row][col] = selectedPiece;
       board[selectedPosition.row][selectedPosition.col] = null;
 
@@ -51,8 +59,8 @@ boardElement.addEventListener('click', (e) => {
       // Invalid move, reset the selection
       clearSelectedPiece();
     }
-  } else if (piece && piece.color === currentPlayer && (piece.type === 'pawn' || piece.type === 'queen')) {
-    // Select the piece if it belongs to the current player and is a pawn or queen
+  } else if (piece && piece.color === currentPlayer) {
+    // Select the piece if it belongs to the current player (any type)
     selectedPiece = piece;
     selectedPosition = { row, col };
     selectedPieceElement = target.classList.contains('piece') ? target : target.firstChild;
@@ -62,6 +70,19 @@ boardElement.addEventListener('click', (e) => {
   }
 });
 
+// Add captured piece to the respective container
+function addCapturedPiece(piece) {
+  const pieceElement = document.createElement('div');
+  pieceElement.textContent = getPieceSymbol(piece);
+  pieceElement.classList.add('captured-piece');
+
+  if (piece.color === 'white') {
+    capturedWhiteContainer.appendChild(pieceElement);
+  } else {
+    capturedBlackContainer.appendChild(pieceElement);
+  }
+}
+
 // Helper function to clear the selected piece highlight
 function clearSelectedPiece() {
   if (selectedPieceElement) {
@@ -70,4 +91,18 @@ function clearSelectedPiece() {
   }
   selectedPiece = null;
   selectedPosition = null;
+}
+
+// Helper function to get piece symbol
+function getPieceSymbol(piece) {
+  const symbols = {
+    pawn: { white: '♙', black: '♟' },
+    rook: { white: '♖', black: '♜' },
+    knight: { white: '♘', black: '♞' },
+    bishop: { white: '♗', black: '♝' },
+    queen: { white: '♕', black: '♛' },
+    king: { white: '♔', black: '♚' }
+  };
+
+  return symbols[piece.type][piece.color];
 }

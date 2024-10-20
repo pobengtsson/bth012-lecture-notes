@@ -10,11 +10,17 @@ h1 {
   margin-top: 20px;
 }
 
+.game-container {
+  display: flex;
+  align-items: center;
+}
+
 #chess-board {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
   border: 2px solid #333;
+  margin: 0 20px;
 }
 
 .square {
@@ -23,7 +29,8 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 3em;
+  /* Board pieces size */
   cursor: pointer;
   position: relative;
   transition: background-color 0.3s;
@@ -50,27 +57,44 @@ h1 {
   font-weight: bold;
 }
 
-/* New CSS for the piece's glowing effect */
+/* Modified CSS for captured pieces containers */
+.captured-pieces {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  min-height: 480px;
+  padding: 10px;
+}
+
+/* Captured piece style */
+.captured-piece {
+  font-size: 2em;
+  /* Captured pieces size */
+  margin: 5px;
+}
+
 .piece {
   position: relative;
   z-index: 1;
 }
 
+/* Only apply the glowing animation */
 .selected-piece {
-  animation: piece-glow 1s infinite;
-  color: yellow;
+  animation: piece-glow 2s infinite;
 }
 
 @keyframes piece-glow {
   0% {
-    text-shadow: 0 0 5px rgba(255, 255, 0, 0.4);
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
   }
 
   50% {
-    text-shadow: 0 0 15px rgba(255, 255, 0, 0.75);
+    text-shadow: 0 0 25px rgba(255, 255, 0, 1);
   }
 
   100% {
-    text-shadow: 0 0 5px rgba(255, 255, 0, 0.4);
+    text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
   }
 }
