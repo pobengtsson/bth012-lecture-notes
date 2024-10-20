@@ -1,0 +1,50 @@
+/* CSS Variables */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #e74c3c;
+  --font-size: 16px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: var(--primary-color);
+}
+
+/* Flexbox Container */
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #ecf0f1;
+  gap: 20px;
+}
+
+/* Box Model Demonstration */
+.box {
+  width: 200px;
+  padding: 20px;
+  border: 5px solid var(--primary-color);
+  margin: 10px;
+  box-sizing: border-box;
+  background-color: white;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  font-size: var(--font-size);
+}
+
+.box:hover {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .box {
+    width: 100%;
+    font-size: calc(var(--font-size) - 2px);
+  }
+}

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Arcade Platform Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      /* Classic black background */
+    }
+
+    canvas {
+      display: block;
+      background-color: #000;
+    }
+
+    #scoreboard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 20px;
+      z-index: 1;
+    }
+  </style>
+  <!-- Google Font for Arcade Style -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="scoreboard">Score: 0</div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Game Variables
+    let score = 0;
+
+    // Key Presses
+    const keys = {
+      right: false,
+      left: false,
+      up: false,
+      down: false
+    };
+
+    // Player Object
+    const player = {
+      x: 100,
+      y: canvas.height - 150,
+      width: 40,
+      height: 40,
+      speed: 5,
+      dx: 0,
+      dy: 0,
+      gravity: 0.8,
+      jumpStrength: -15,
+      grounded: false,
+      climbing: false,
+      sprite: '🕹️'
+    };
+
+    // Platforms
+    const platforms = [
+      { x: 0, y: canvas.height - 100, width: canvas.width, height: 20 },
+      { x: 100, y: canvas.height - 200, width: 300, height: 20 },
+      { x: 500, y: canvas.height - 300, width: 400, height: 20 },
+      { x: 200, y: canvas.height - 400, width: 250, height: 20 },
+      { x: 700, y: canvas.height - 500, width: 300, height: 20 },
+      { x: 50, y: canvas.height - 600, width: 150, height: 20 },
+      { x: 400, y: canvas.height - 700, width: 350, height: 20 },
+    ];
+
+    // Ladders
+    const ladders = [
+      { x: 250, y: canvas.height - 200, width: 50, height: 100 },
+      { x: 650, y: canvas.height - 300, width: 50, height: 100 },
+      { x: 300, y: canvas.height - 400, width: 50, height: 100 },
+      { x: 800, y: canvas.height - 500, width: 50, height: 100 },
+      { x: 100, y: canvas.height - 600, width: 50, height: 100 },
+    ];
+
+    // Coins
+    const coins = [
+      { x: 150, y: canvas.height - 230, collected: false, sprite: '💰' },
+      { x: 550, y: canvas.height - 330, collected: false, sprite: '💰' },
+      { x: 300, y: canvas.height - 430, collected: false, sprite: '💰' },
+      { x: 750, y: canvas.height - 530, collected: false, sprite: '💰' },
+      { x: 100, y: canvas.height - 630, collected: false, sprite: '💰' },
+      { x: 500, y: canvas.height - 730, collected: false, sprite: '💰' },
+      { x: 800, y: canvas.height - 730, collected: false, sprite: '💰' },
+      { x: 400, y: canvas.height - 230, collected: false, sprite: '💰' },
+      { x: 900, y: canvas.height - 330, collected: false, sprite: '💰' },
+      { x: 600, y: canvas.height - 430, collected: false, sprite: '💰' },
+    ];
+
+    // Enemies
+    const enemies = [
+      { x: 200, y: canvas.height - 140, width: 40, height: 40, sprite: '👾', dx: 2, range: [200, 400] },
+      { x: 550, y: canvas.height - 340, width: 40, height: 40, sprite: '👾', dx: 3, range: [500, 900] },
+      { x: 250, y: canvas.height - 440, width: 40, height: 40, sprite: '👾', dx: 2.5, range: [200, 450] },
+      { x: 700, y: canvas.height - 540, width: 40, height: 40, sprite: '👾', dx: 3.5, range: [700, 1000] },
+      { x: 100, y: canvas.height - 640, width: 40, height: 40, sprite: '👾', dx: 2, range: [50, 200] },
+    ];
+
+    // NPCs
+    const npcs = [
+      { x: 500, y: canvas.height - 740, width: 40, height: 40, sprite: '🧙‍♂️', dx: 1.5, range: [500, 850] },
+      { x: 100, y: canvas.height - 240, width: 40, height: 40, sprite: '🤖', dx: 2, range: [100, 400] },
+      { x: 600, y: canvas.height - 340, width: 40, height: 40, sprite: '👨‍🚀', dx: 2.5, range: [600, 900] },
+    ];
+
+    // Draw Functions
+    function drawPlayer() {
+      ctx.font = `${player.width}px 'Segoe UI Emoji'`;
+      ctx.textAlign = 'center';
+      ctx.fillText(player.sprite, player.x + player.width / 2, player.y + player.height - 5);
+    }
+
+    function drawPlatforms() {
+      platforms.forEach(platform => {
+        ctx.fillStyle = '#FF4500'; // Orange platforms
+        ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+      });
+    }
+
+    function drawLadders() {
+      ladders.forEach(ladder => {
+        ctx.fillStyle = '#8B4513'; // Brown ladders
+        ctx.fillRect(ladder.x, ladder.y, ladder.width, ladder.height);
+      });
+    }
+
+    function drawCoins() {
+      coins.forEach(coin => {
+        if (!coin.collected) {
+          ctx.font = `30px 'Segoe UI Emoji'`;
+          ctx.fillText(coin.sprite, coin.x + 15, coin.y + 25);
+        }
+      });
+    }
+
+    function drawEnemies() {
+      enemies.forEach(enemy => {
+        ctx.font = `${enemy.width}px 'Segoe UI Emoji'`;
+        ctx.fillText(enemy.sprite, enemy.x + enemy.width / 2, enemy.y + enemy.height - 5);
+      });
+    }
+
+    function drawNPCs() {
+      npcs.forEach(npc => {
+        ctx.font = `${npc.width}px 'Segoe UI Emoji'`;
+        ctx.fillText(npc.sprite, npc.x + npc.width / 2, npc.y + npc.height - 5);
+      });
+    }
+
+    // Movement and Physics
+    function movePlayer() {
+      // Horizontal movement
+      if (keys.right) {
+        player.dx = player.speed;
+      } else if (keys.left) {
+        player.dx = -player.speed;
+      } else {
+        player.dx = 0;
+      }
+
+      // Vertical movement
+      if (player.climbing) {
+        if (keys.up) {
+          player.dy = -player.speed;
+        } else if (keys.down) {
+          player.dy = player.speed;
+        } else {
+          player.dy = 0;
+        }
+      } else {
+        player.dy += player.gravity;
+        if (keys.up && player.grounded) {
+          player.dy = player.jumpStrength;
+          player.grounded = false;
+        }
+      }
+
+      player.x += player.dx;
+      player.y += player.dy;
+
+      // Collision with walls
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+      // Collision with platforms
+      player.grounded = false;
+      platforms.forEach(platform => {
+        if (
+          player.x < platform.x + platform.width &&
+          player.x + player.width > platform.x &&
+          player.y + player.height > platform.y &&
+          player.y + player.height < platform.y + platform.height &&
+          player.dy >= 0
+        ) {
+          player.y = platform.y - player.height;
+          player.dy = 0;
+          player.grounded = true;
+        }
+      });
+
+      // Check if on ladder
+      player.climbing = false;
+      ladders.forEach(ladder => {
+        if (
+          player.x + player.width > ladder.x &&
+          player.x < ladder.x + ladder.width &&
+          player.y + player.height > ladder.y &&
+          player.y < ladder.y + ladder.height
+        ) {
+          player.climbing = true;
+          player.dy = 0;
+        }
+      });
+    }
+
+    function moveEnemies() {
+      enemies.forEach(enemy => {
+        enemy.x += enemy.dx;
+
+        // Reverse direction at range limits
+        if (enemy.x < enemy.range[0] || enemy.x + enemy.width > enemy.range[1]) {
+          enemy.dx *= -1;
+        }
+
+        // Collision with player
+        if (
+          player.x < enemy.x + enemy.width &&
+          player.x + player.width > enemy.x &&
+          player.y < enemy.y + enemy.height &&
+          player.y + player.height > enemy.y
+        ) {
+          gameOver();
+        }
+      });
+    }
+
+    function moveNPCs() {
+      npcs.forEach(npc => {
+        npc.x += npc.dx;
+
+        // Reverse direction at range limits
+        if (npc.x < npc.range[0] || npc.x + npc.width > npc.range[1]) {
+          npc.dx *= -1;
+        }
+      });
+    }
+
+    function collectCoins() {
+      coins.forEach(coin => {
+        if (
+          !coin.collected &&
+          player.x < coin.x + 30 &&
+          player.x + player.width > coin.x &&
+          player.y < coin.y + 30 &&
+          player.y + player.height > coin.y
+        ) {
+          coin.collected = true;
+          score += 10;
+          updateScore();
+        }
+      });
+    }
+
+    function updateScore() {
+      document.getElementById('scoreboard').innerText = `Score: ${score}`;
+    }
+
+    function gameOver() {
+      alert('Game Over! Your score: ' + score);
+      document.location.reload();
+    }
+
+    // Game Loop
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      movePlayer();
+      moveEnemies();
+      moveNPCs();
+      collectCoins();
+
+      drawPlatforms();
+      drawLadders();
+      drawCoins();
+      drawEnemies();
+      drawNPCs();
+      drawPlayer();
+
+      requestAnimationFrame(update);
+    }
+
+    // Event Listeners
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
+      if (e.key === 'ArrowUp' || e.key === 'w') keys.up = true;
+      if (e.key === 'ArrowDown' || e.key === 's') keys.down = true;
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+      if (e.key === 'ArrowUp' || e.key === 'w') keys.up = false;
+      if (e.key === 'ArrowDown' || e.key === 's') keys.down = false;
+    });
+
+    // Start Game
+    updateScore();
+    update();
+  </script>
+</body>
+
+</html>

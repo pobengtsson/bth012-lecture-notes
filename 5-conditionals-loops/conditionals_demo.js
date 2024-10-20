@@ -15,7 +15,7 @@
 // Given a number, determine if it's positive, negative, or zero.
 
 // {
-//   let number = 5 // or some number we change to
+//   let number = '-13'
 
 //   if (number > 0) {
 //       console.log("Positive")

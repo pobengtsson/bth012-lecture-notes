@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Particle Simulation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #1a1a1a;
+    }
+
+    canvas {
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight - 20;
+
+    let mouse = {
+      x: undefined,
+      y: undefined
+    };
+
+    const forcefieldRadius = canvas.height * 0.03; // 3% of viewport height
+
+    canvas.addEventListener('mousemove', (event) => {
+      mouse.x = event.clientX - canvas.offsetLeft;
+      mouse.y = event.clientY - canvas.offsetTop;
+    });
+
+    class Particle {
+      constructor(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = this.getRandomColor();
+        this.dx = (Math.random() - 0.5) * 4;
+        this.dy = (Math.random() - 0.5) * 4;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      update(particles) {
+        this.x += this.dx;
+        this.y += this.dy;
+
+        // Bounce off edges
+        if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+          this.dx = -this.dx;
+          this.color = this.getRandomColor();
+        }
+        if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+          this.dy = -this.dy;
+          this.color = this.getRandomColor();
+        }
+
+        // Check collision with other particles
+        for (let particle of particles) {
+          if (particle === this) continue;
+          if (this.checkCollision(particle)) {
+            this.resolveCollision(particle);
+            this.color = this.getRandomColor();
+            particle.color = particle.getRandomColor();
+          }
+        }
+
+        // Apply forcefield effect
+        this.applyForcefield();
+
+        this.draw();
+      }
+
+      applyForcefield() {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < forcefieldRadius) {
+          const forceMultiplier = (forcefieldRadius - distance) / forcefieldRadius;
+          this.dx += dx / distance * forceMultiplier * 0.5;
+          this.dy += dy / distance * forceMultiplier * 0.5;
+
+          // Cap maximum speed
+          const maxSpeed = 10;
+          const speed = Math.sqrt(this.dx * this.dx + this.dy * this.dy);
+          if (speed > maxSpeed) {
+            this.dx = (this.dx / speed) * maxSpeed;
+            this.dy = (this.dy / speed) * maxSpeed;
+          }
+        }
+      }
+
+      checkCollision(other) {
+        const dx = this.x - other.x;
+        const dy = this.y - other.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < this.radius + other.radius;
+      }
+
+      resolveCollision(other) {
+        const xVelocityDiff = this.dx - other.dx;
+        const yVelocityDiff = this.dy - other.dy;
+        const xDist = other.x - this.x;
+        const yDist = other.y - this.y;
+
+        if (xVelocityDiff * xDist + yVelocityDiff * yDist >= 0) {
+          const angle = -Math.atan2(other.y - this.y, other.x - this.x);
+          const m1 = this.radius * this.radius;
+          const m2 = other.radius * other.radius;
+          const u1 = this.rotate(this.dx, this.dy, angle);
+          const u2 = this.rotate(other.dx, other.dy, angle);
+          const v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
+          const v2 = { x: u2.x * (m2 - m1) / (m1 + m2) + u1.x * 2 * m1 / (m1 + m2), y: u2.y };
+          const vFinal1 = this.rotate(v1.x, v1.y, -angle);
+          const vFinal2 = this.rotate(v2.x, v2.y, -angle);
+          this.dx = vFinal1.x;
+          this.dy = vFinal1.y;
+          other.dx = vFinal2.x;
+          other.dy = vFinal2.y;
+        }
+      }
+
+      rotate(dx, dy, angle) {
+        return {
+          x: dx * Math.cos(angle) - dy * Math.sin(angle),
+          y: dx * Math.sin(angle) + dy * Math.cos(angle)
+        };
+      }
+
+      getRandomColor() {
+        return `hsl(${Math.random() * 360}, 50%, 50%)`;
+      }
+    }
+
+    const particles = [];
+    const particleCount = 50;
+
+    for (let i = 0; i < particleCount; i++) {
+      const radius = Math.random() * 10 + 5;
+      const x = Math.random() * (canvas.width - radius * 2) + radius;
+      const y = Math.random() * (canvas.height - radius * 2) + radius;
+      particles.push(new Particle(x, y, radius));
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let particle of particles) {
+        particle.update(particles);
+      }
+    }
+
+    animate();
+  </script>
+</body>
+
+</html>

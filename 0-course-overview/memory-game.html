@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      width: 400px;
+      margin-bottom: 20px;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 400px;
+      height: 400px;
+    }
+
+    .card {
+      background-color: #3498db;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: pointer;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+      background-color: #ffffff;
+    }
+
+    .card-content {
+      position: absolute;
+      backface-visibility: hidden;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Memory Game</h1>
+  <div class="game-info">
+    <span id="timer">Time: 0s</span>
+    <span id="moves">Moves: 0</span>
+  </div>
+  <div class="game-board" id="gameBoard"></div>
+  <button id="startButton">Start New Game</button>
+
+  <script>
+    const gameBoard = document.getElementById('gameBoard');
+    const startButton = document.getElementById('startButton');
+    const timerDisplay = document.getElementById('timer');
+    const movesDisplay = document.getElementById('moves');
+
+    const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+    let cards = [...emojis, ...emojis];
+    let flippedCards = [];
+    let matchedPairs = 0;
+    let moves = 0;
+    let gameStarted = false;
+    let timer;
+    let seconds = 0;
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createCard(emoji) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+                <div class="card-content">?</div>
+                <div class="card-content card-back">${emoji}</div>
+            `;
+      card.addEventListener('click', () => flipCard(card));
+      return card;
+    }
+
+    function startGame() {
+      gameBoard.innerHTML = '';
+      shuffleArray(cards);
+      cards.forEach(emoji => gameBoard.appendChild(createCard(emoji)));
+      matchedPairs = 0;
+      moves = 0;
+      seconds = 0;
+      movesDisplay.textContent = `Moves: ${moves}`;
+      timerDisplay.textContent = 'Time: 0s';
+      gameStarted = true;
+      startTimer();
+    }
+
+    function flipCard(card) {
+      if (!gameStarted || card.classList.contains('flipped') || flippedCards.length >= 2) return;
+
+      card.classList.add('flipped');
+      flippedCards.push(card);
+
+      if (flippedCards.length === 2) {
+        moves++;
+        movesDisplay.textContent = `Moves: ${moves}`;
+        checkForMatch();
+      }
+    }
+
+    function checkForMatch() {
+      const [card1, card2] = flippedCards;
+      const emoji1 = card1.querySelector('.card-back').textContent;
+      const emoji2 = card2.querySelector('.card-back').textContent;
+
+      if (emoji1 === emoji2) {
+        matchedPairs++;
+        flippedCards = [];
+        if (matchedPairs === emojis.length) {
+          endGame();
+        }
+      } else {
+        setTimeout(() => {
+          card1.classList.remove('flipped');
+          card2.classList.remove('flipped');
+          flippedCards = [];
+        }, 1000);
+      }
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => {
+        seconds++;
+        timerDisplay.textContent = `Time: ${seconds}s`;
+      }, 1000);
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      gameStarted = false;
+      setTimeout(() => {
+        alert(`Congratulations! You won in ${moves} moves and ${seconds} seconds!`);
+      }, 500);
+    }
+
+    startButton.addEventListener('click', startGame);
+  </script>
+</body>
+
+</html>
