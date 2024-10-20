@@ -23,14 +23,67 @@
         Show Moves (Black)
       </label>
     </div>
+    <div>
+      <label>
+        <input type="checkbox" id="toggle-coordinates" checked>
+        Show Coordinates
+      </label>
+    </div>
   </div>
 
   <div class="game-container">
     <!-- Captured pieces for Black -->
     <div id="captured-black" class="captured-pieces"></div>
 
-    <!-- Chessboard -->
-    <div id="chess-board"></div>
+    <!-- Chessboard with coordinates -->
+    <div class="board-container">
+      <!-- Vertical coordinates (left) -->
+      <div class="vertical-coords left-coords">
+        <div class="coord">8</div>
+        <div class="coord">7</div>
+        <div class="coord">6</div>
+        <div class="coord">5</div>
+        <div class="coord">4</div>
+        <div class="coord">3</div>
+        <div class="coord">2</div>
+        <div class="coord">1</div>
+      </div>
+      <!-- Chessboard -->
+      <div id="chess-board" class="chess-board"></div>
+      <!-- Vertical coordinates (right) -->
+      <div class="vertical-coords right-coords">
+        <div class="coord">8</div>
+        <div class="coord">7</div>
+        <div class="coord">6</div>
+        <div class="coord">5</div>
+        <div class="coord">4</div>
+        <div class="coord">3</div>
+        <div class="coord">2</div>
+        <div class="coord">1</div>
+      </div>
+      <!-- Horizontal coordinates (bottom) -->
+      <div class="horizontal-coords bottom-coords">
+        <div class="coord">A</div>
+        <div class="coord">B</div>
+        <div class="coord">C</div>
+        <div class="coord">D</div>
+        <div class="coord">E</div>
+        <div class="coord">F</div>
+        <div class="coord">G</div>
+        <div class="coord">H</div>
+      </div>
+      <!-- Horizontal coordinates (top) -->
+      <div class="horizontal-coords top-coords">
+        <div class="coord">A</div>
+        <div class="coord">B</div>
+        <div class="coord">C</div>
+        <div class="coord">D</div>
+        <div class="coord">E</div>
+        <div class="coord">F</div>
+        <div class="coord">G</div>
+        <div class="coord">H</div>
+      </div>
+    </div>
 
     <!-- Captured pieces for White -->
     <div id="captured-white" class="captured-pieces"></div>

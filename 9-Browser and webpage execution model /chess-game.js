@@ -15,11 +15,20 @@ const capturedWhiteContainer = document.getElementById('captured-white');
 const capturedBlackContainer = document.getElementById('captured-black');
 const showMovesWhite = document.getElementById('show-moves-white');
 const showMovesBlack = document.getElementById('show-moves-black');
+const toggleCoordinates = document.getElementById('toggle-coordinates');
+const boardContainer = document.querySelector('.board-container');
 
 // Set up initial board UI
 updateBoardUI(board, boardElement);
 
-// Event listener for clicks on the board
+toggleCoordinates.addEventListener('change', () => {
+  if (toggleCoordinates.checked) {
+    boardContainer.classList.remove('hide-coords');
+  } else {
+    boardContainer.classList.add('hide-coords');
+  }
+});
+
 boardElement.addEventListener('click', (e) => {
   const target = e.target;
 

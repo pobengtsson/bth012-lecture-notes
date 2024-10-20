@@ -21,12 +21,17 @@ h1 {
   align-items: center;
 }
 
-#chess-board {
+.board-container {
+  position: relative;
+  display: inline-block;
+}
+
+.chess-board {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
   border: 2px solid #333;
-  margin: 0 20px;
+  position: relative;
 }
 
 .square {
@@ -40,7 +45,6 @@ h1 {
   position: relative;
   transition: background-color 0.3s, border 0.3s;
   box-sizing: border-box;
-  /* Ensure borders are within the square dimensions */
 }
 
 .white-square {
@@ -55,7 +59,6 @@ h1 {
   background-color: yellow;
 }
 
-/* New styling for valid move indication */
 .valid-move {
   border: 2px solid green;
 }
@@ -67,6 +70,61 @@ h1 {
 
 #current-player {
   font-weight: bold;
+}
+
+/* Coordinates styling */
+.vertical-coords,
+.horizontal-coords {
+  position: absolute;
+  color: lightgray;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none;
+  /* Make them unclickable */
+}
+
+.vertical-coords {
+  top: 0;
+  display: grid;
+  grid-template-rows: repeat(8, 60px);
+}
+
+.left-coords {
+  left: -20px;
+}
+
+.right-coords {
+  right: -20px;
+}
+
+.horizontal-coords {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  text-align: center;
+}
+
+.top-coords {
+  top: -20px;
+  left: 0;
+  width: 480px;
+}
+
+.bottom-coords {
+  bottom: -20px;
+  left: 0;
+  width: 480px;
+}
+
+.coord {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hidden coordinates styling */
+.hide-coords .vertical-coords,
+.hide-coords .horizontal-coords {
+  display: none;
 }
 
 .captured-pieces {
