@@ -1,8 +1,8 @@
-export function getValidMoves(board, piece, position) {
+export function getValidMoves(board, piece, position, enPassantTarget = null) {
   const { type, color } = piece;
   switch (type) {
     case 'pawn':
-      return getPawnMoves(board, position, color);
+      return getPawnMoves(board, position, color, enPassantTarget);
     case 'rook':
       return getRookMoves(board, position, color);
     case 'knight':
@@ -23,14 +23,15 @@ export function getValidMoves(board, piece, position) {
  */
 
 // Pawn moves with promotion and en passant
-function getPawnMoves(board, { row, col }, color) {
+function getPawnMoves(board, { row, col }, color, enPassantTarget) {
   const moves = [];
-  const direction = (color === 'white') ? -1 : 1;
+  const direction = (color === 'white') ? -1 : 1; // White moves up, Black moves down
   const promotionRow = (color === 'white') ? 0 : 7;
 
   // Move forward one square
   if (isWithinBounds(row + direction, col) && board[row + direction][col] === null) {
     if (row + direction === promotionRow) {
+      // Add promotion options when reaching the promotion rank
       addPromotionMoves(moves, row + direction, col, color);
     } else {
       moves.push({ row: row + direction, col });
@@ -44,11 +45,35 @@ function getPawnMoves(board, { row, col }, color) {
     }
   }
 
-  // Diagonal captures
-  checkDiagonalCapture(moves, board, row, col, direction, color);
+  // Diagonal captures including en passant
+  // Left diagonal
+  if (isWithinBounds(row + direction, col - 1)) {
+    const diagonalLeft = board[row + direction][col - 1];
+    // Standard capture
+    if (diagonalLeft && diagonalLeft.color !== color) {
+      moves.push({ row: row + direction, col: col - 1 });
+    }
+    // En passant capture
+    if (enPassantTarget && enPassantTarget.row === row + direction && enPassantTarget.col === col - 1) {
+      moves.push({ row: row + direction, col: col - 1 });
+    }
+  }
+  // Right diagonal
+  if (isWithinBounds(row + direction, col + 1)) {
+    const diagonalRight = board[row + direction][col + 1];
+    // Standard capture
+    if (diagonalRight && diagonalRight.color !== color) {
+      moves.push({ row: row + direction, col: col + 1 });
+    }
+    // En passant capture
+    if (enPassantTarget && enPassantTarget.row === row + direction && enPassantTarget.col === col + 1) {
+      moves.push({ row: row + direction, col: col + 1 });
+    }
+  }
 
   return moves;
 }
+
 
 // Add promotion options for pawns
 function addPromotionMoves(moves, row, col, color) {

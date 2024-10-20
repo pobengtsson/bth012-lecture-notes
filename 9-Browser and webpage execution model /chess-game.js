@@ -7,11 +7,7 @@ let selectedPiece = null;
 let selectedPosition = null;
 let selectedPieceElement = null;
 let highlightedSquares = []; // Track highlighted squares
-let enPassantSquare = null; // Track en passant target square
-let castlingRights = {
-  white: { kingside: true, queenside: true },
-  black: { kingside: true, queenside: true }
-};
+let enPassantTarget = null; // Track en passant target square
 
 const boardElement = document.getElementById('chess-board');
 const turnIndicator = document.getElementById('current-player');
@@ -37,7 +33,7 @@ boardElement.addEventListener('click', (e) => {
   const piece = board[row][col];
 
   if (selectedPiece) {
-    const validMoves = getValidMoves(board, selectedPiece, selectedPosition);
+    const validMoves = getValidMoves(board, selectedPiece, selectedPosition, enPassantTarget);
     const isValidMove = validMoves.some(move => move.row === row && move.col === col);
 
     if (isValidMove) {
@@ -63,7 +59,7 @@ boardElement.addEventListener('click', (e) => {
     const showMoves = (currentPlayer === 'white' && showMovesWhite.checked) ||
       (currentPlayer === 'black' && showMovesBlack.checked);
     if (showMoves) {
-      const validMoves = getValidMoves(board, selectedPiece, selectedPosition);
+      const validMoves = getValidMoves(board, selectedPiece, selectedPosition, enPassantTarget);
       highlightValidMoves(validMoves);
     }
   }
@@ -81,14 +77,16 @@ function handleSpecialMoves(row, col) {
     }
   }
 
-  // Handle en passant
-  if (selectedPiece.type === 'pawn' && enPassantSquare && row === enPassantSquare.row && col === enPassantSquare.col) {
-    board[selectedPosition.row][col] = null; // Remove the captured pawn
+  // Handle en passant capture
+  if (selectedPiece.type === 'pawn' && enPassantTarget && row === enPassantTarget.row && col === enPassantTarget.col) {
+    // Remove the opponent's pawn that was captured en passant
+    const capturedPawnRow = (currentPlayer === 'white') ? row + 1 : row - 1;
+    board[capturedPawnRow][col] = null;
     makeMove(row, col);
     return true;
   }
 
-  // Handle castling
+  // Handle castling (existing logic remains unchanged)
   if (selectedPiece.type === 'king' && Math.abs(col - selectedPosition.col) === 2) {
     if (col === 6) { // Kingside castling
       board[row][5] = board[row][7]; // Move rook
@@ -108,13 +106,10 @@ function handleSpecialMoves(row, col) {
 function makeMove(row, col) {
   // Handle en passant availability
   if (selectedPiece.type === 'pawn' && Math.abs(row - selectedPosition.row) === 2) {
-    enPassantSquare = { row: (selectedPosition.row + row) / 2, col };
+    enPassantTarget = { row: (selectedPosition.row + row) / 2, col };
   } else {
-    enPassantSquare = null;
+    enPassantTarget = null;
   }
-
-  // Update castling rights
-  updateCastlingRights(selectedPiece, selectedPosition);
 
   // Move the piece on the board
   board[row][col] = selectedPiece;
