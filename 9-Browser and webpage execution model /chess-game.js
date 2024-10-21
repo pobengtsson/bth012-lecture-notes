@@ -90,6 +90,7 @@ function handleSpecialMoves(row, col) {
   if (selectedPiece.type === 'pawn' && enPassantTarget && row === enPassantTarget.row && col === enPassantTarget.col) {
     // Remove the opponent's pawn that was captured en passant
     const capturedPawnRow = (currentPlayer === 'white') ? row + 1 : row - 1;
+    addCapturedPiece(board[capturedPawnRow][col])
     board[capturedPawnRow][col] = null;
     makeMove(row, col);
     return true;
@@ -118,6 +119,10 @@ function makeMove(row, col) {
     enPassantTarget = { row: (selectedPosition.row + row) / 2, col };
   } else {
     enPassantTarget = null;
+  }
+
+  if(board[row][col]) {
+    addCapturedPiece(board[row][col])
   }
 
   // Move the piece on the board
