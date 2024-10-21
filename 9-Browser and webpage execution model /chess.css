@@ -81,6 +81,7 @@ h1 {
 #turn-indicator {
   margin-top: 10px;
   font-size: 18px;
+  margin: 20px 20px 20px 20px;
 }
 
 #current-player {
