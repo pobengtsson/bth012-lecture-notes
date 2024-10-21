@@ -82,26 +82,6 @@ function addPromotionMoves(moves, row, col, color) {
   });
 }
 
-// Check diagonal captures including en passant
-function checkDiagonalCapture(moves, board, row, col, direction, color) {
-  const leftDiagonal = col - 1;
-  const rightDiagonal = col + 1;
-
-  if (isWithinBounds(row + direction, leftDiagonal)) {
-    const leftPiece = board[row + direction][leftDiagonal];
-    if (leftPiece && leftPiece.color !== color) {
-      moves.push({ row: row + direction, col: leftDiagonal });
-    }
-  }
-
-  if (isWithinBounds(row + direction, rightDiagonal)) {
-    const rightPiece = board[row + direction][rightDiagonal];
-    if (rightPiece && rightPiece.color !== color) {
-      moves.push({ row: row + direction, col: rightDiagonal });
-    }
-  }
-}
-
 // Rook moves
 function getRookMoves(board, { row, col }, color) {
   const moves = [];
