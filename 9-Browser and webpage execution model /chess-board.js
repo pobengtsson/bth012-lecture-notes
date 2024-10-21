@@ -30,7 +30,7 @@ export function initializeBoard() {
   return board;
 }
 
-export function updateBoardUI(board, boardElement) {
+export function updateBoardUI(board, boardElement, turn, selected) {
   boardElement.innerHTML = '';
   board.forEach((row, rowIndex) => {
     row.forEach((piece, colIndex) => {
@@ -40,21 +40,26 @@ export function updateBoardUI(board, boardElement) {
       square.dataset.col = colIndex;
 
       if ((rowIndex + colIndex) % 2 === 0) {
-        square.classList.add('white-square');
+        square.classList.add('white-square')
       } else {
-        square.classList.add('black-square');
+        square.classList.add('black-square')
       }
 
       if (piece) {
-        const pieceElement = document.createElement('span');
-        pieceElement.textContent = getPieceSymbol(piece);
-        pieceElement.classList.add('piece');
-        square.appendChild(pieceElement);
+        const pieceElement = document.createElement('span')
+        pieceElement.textContent = getPieceSymbol(piece)
+        pieceElement.classList.add('piece')
+        pieceElement.classList.add(piece.color)
+        if (!!!selected && piece.color === turn)
+          pieceElement.classList.add(`${turn}-turn`)
+        if (piece == selected)
+          pieceElement.classList.add('selected-piece')
+        square.appendChild(pieceElement)
       }
 
-      boardElement.appendChild(square);
-    });
-  });
+      boardElement.appendChild(square)
+    })
+  })
 }
 
 export function switchTurn(turnIndicator, currentPlayer) {
@@ -66,7 +71,7 @@ export function isGameOver(board, color) {
   return !board.some(row => row.some(piece => piece?.type === 'king' && piece.color === color));
 }
 
-function getPieceSymbol(piece) {
+export function getPieceSymbol(piece) {
   const symbols = {
     pawn: { white: '♙', black: '♟' },
     rook: { white: '♖', black: '♜' },
@@ -76,5 +81,5 @@ function getPieceSymbol(piece) {
     king: { white: '♔', black: '♚' }
   };
 
-  return symbols[piece.type][piece.color];
+  return symbols[piece.type].black;
 }

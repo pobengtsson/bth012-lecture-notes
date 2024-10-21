@@ -1,5 +1,5 @@
 import { getValidMoves } from './chess-moves.js';
-import { initializeBoard, updateBoardUI, switchTurn, isGameOver } from './chess-board.js';
+import { initializeBoard, updateBoardUI, switchTurn, isGameOver, getPieceSymbol } from './chess-board.js';
 
 let currentPlayer = 'white';
 let board = initializeBoard();
@@ -19,7 +19,7 @@ const toggleCoordinates = document.getElementById('toggle-coordinates');
 const boardContainer = document.querySelector('.board-container');
 
 // Set up initial board UI
-updateBoardUI(board, boardElement);
+updateBoardUI(board, boardElement, 'white');
 
 toggleCoordinates.addEventListener('change', () => {
   if (toggleCoordinates.checked) {
@@ -54,6 +54,7 @@ boardElement.addEventListener('click', (e) => {
     } else {
       clearSelectedPiece();
       clearHighlightedMoves();
+      updateBoardUI(board, boardElement, currentPlayer, undefined)
     }
   } else if (piece && piece.color === currentPlayer) {
     // Select the piece if it belongs to the current player
@@ -61,8 +62,7 @@ boardElement.addEventListener('click', (e) => {
     selectedPosition = { row, col };
     selectedPieceElement = target.classList.contains('piece') ? target : target.firstChild;
 
-    // Add the selected-piece class to indicate selection
-    selectedPieceElement.classList.add('selected-piece');
+    updateBoardUI(board, boardElement, currentPlayer, selectedPiece)
 
     // Highlight valid moves if the toggle is enabled
     const showMoves = (currentPlayer === 'white' && showMovesWhite.checked) ||
@@ -133,9 +133,9 @@ function makeMove(row, col) {
   clearSelectedPiece();
   clearHighlightedMoves();
 
-  updateBoardUI(board, boardElement);
   switchTurn(turnIndicator, currentPlayer);
   currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+  updateBoardUI(board, boardElement, currentPlayer, undefined);
 
   if (isGameOver(board, currentPlayer)) {
     alert(`${currentPlayer === 'white' ? 'Black' : 'White'} wins!`);
@@ -180,6 +180,7 @@ function addCapturedPiece(piece) {
   const pieceElement = document.createElement('div');
   pieceElement.textContent = getPieceSymbol(piece);
   pieceElement.classList.add('captured-piece');
+  pieceElement.classList.add(piece.color);
 
   if (piece.color === 'white') {
     capturedWhiteContainer.appendChild(pieceElement);
@@ -196,18 +197,4 @@ function clearSelectedPiece() {
   }
   selectedPiece = null;
   selectedPosition = null;
-}
-
-// Helper function to get piece symbol
-function getPieceSymbol(piece) {
-  const symbols = {
-    pawn: { white: '♙', black: '♟' },
-    rook: { white: '♖', black: '♜' },
-    knight: { white: '♘', black: '♞' },
-    bishop: { white: '♗', black: '♝' },
-    queen: { white: '♕', black: '♛' },
-    king: { white: '♔', black: '♚' }
-  };
-
-  return symbols[piece.type][piece.color];
 }

@@ -1,4 +1,14 @@
-/* Existing CSS (unchanged) */
+:root {
+  --black-piece-color: #844c1e;
+  --white-piece-color: antiquewhite;
+  --black-square-color: #cc9262;
+  --white-square-color: #fffaf5;
+  --board-boarder-color: #cc9262;
+  --glow-selected-color: 255, 255, 0;
+  --glow-valid-move-color: 5, 125, 5;
+  --coord-text-color: lightgrey;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -30,7 +40,9 @@ h1 {
   display: grid;
   grid-template-columns: repeat(8, 60px);
   grid-template-rows: repeat(8, 60px);
-  border: 2px solid #333;
+  padding: 10px;
+  background-color: var(--board-boarder-color);
+  border-radius: 10px;
   position: relative;
 }
 
@@ -48,34 +60,11 @@ h1 {
 }
 
 .white-square {
-  background-color: #f0d9b5;
+  background-color: var(--white-square-color);
 }
 
 .black-square {
-  background-color: #b58863;
-}
-
-.highlight {
-  background-color: yellow;
-}
-
-.valid-move {
-  position: relative;
-  animation: subtle-move-glow 1.5s infinite;
-  z-index: 5;
-  /* Ensure it appears above other elements */
-}
-
-@keyframes subtle-move-glow {
-  0%,100% {
-    box-shadow: 0 0 3px 2px rgba(5, 125, 5, 0.4),
-      0 0 7px 4px rgba(5, 125, 5, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 7px 5px rgba(5, 125, 5, 0.6),
-      0 0 12px 7px rgba(5, 125, 5, 0.5);
-  }
+  background-color: var(--black-square-color);
 }
 
 #turn-indicator {
@@ -88,15 +77,13 @@ h1 {
   font-weight: bold;
 }
 
-/* Coordinates styling */
 .vertical-coords,
 .horizontal-coords {
   position: absolute;
-  color: lightgray;
+  color: var(--coord-text-color);
   font-size: 14px;
   font-weight: bold;
-  pointer-events: none;
-  /* Make them unclickable */
+  pointer-events: none;  /* Make them unclickable */
 }
 
 .vertical-coords {
@@ -158,30 +145,66 @@ h1 {
   margin: 5px;
 }
 
+.captured-piece.black {
+  color: var(--black-piece-color);
+}
+
+.captured-piece.white {
+  color: var(--white-piece-color);
+}
+
 .piece {
   position: relative;
   z-index: 1;
 }
 
+.piece.black {
+  color:var(--black-piece-color);
+}
+.piece.white {
+  color: var(--white-piece-color);
+}
+
 .square:has(.selected-piece) {
+  overflow: visible;
   position: relative;
   animation: subtle-glow 1.5s infinite;
   z-index: 1;
 }
 
+.square:has(.white-turn), .square:has(.black-turn) {
+  position: relative;
+  overflow: visible;
+  animation: subtle-glow 1.5s infinite;
+  z-index: 10;
+}
+
 @keyframes subtle-glow {
-  0% {
-    box-shadow: 0 0 5px 2px rgba(255, 255, 0, 0.4),
-      0 0 10px 4px rgba(255, 255, 0, 0.3);
+  0%,100% {
+    box-shadow: 0 0 2px 2px rgba(var(--glow-selected-color), 0.9),
+      0 0 2px 2px rgba(var(--glow-selected-color), 0.4);
   }
 
   50% {
-    box-shadow: 0 0 10px 5px rgba(255, 255, 0, 0.6),
-      0 0 15px 7px rgba(255, 255, 0, 0.5);
+    box-shadow: 0 0 6px 2px rgba(var(--glow-selected-color), 0.6),
+      0 0 4px 2px rgba(var(--glow-selected-color), 0.8);
+  }
+}
+
+.valid-move {
+  position: relative;
+  animation: subtle-move-glow 1.5s infinite;
+  z-index: 5;
+}
+
+@keyframes subtle-move-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 2px 2px rgba(var(--glow-valid-move-color), 0.8);
   }
 
-  100% {
-    box-shadow: 0 0 5px 2px rgba(255, 255, 0, 0.4),
-      0 0 10px 4px rgba(255, 255, 0, 0.3);
+  50% {
+    box-shadow: 0 0 4px 2px rgba(var(--glow-valid-move-color), 0.6);
   }
 }
