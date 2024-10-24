@@ -44,7 +44,6 @@ h1 {
 }
 
 .chess-board {
-  aspect-ratio: 1;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
@@ -55,7 +54,6 @@ h1 {
 }
 
 .square {
-  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;

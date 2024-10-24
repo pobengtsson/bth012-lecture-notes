@@ -44,7 +44,7 @@ The CSS Grid Layout provides a two-dimensional layout system, which is ideal for
 
 ### Key Concepts of Grid Layout
 
-#### 4.2.1. **Defining a Grid Container**
+#### 4.1.1. **Defining a Grid Container**
    To create a grid layout, set the element's `display` property to `grid` or `inline-grid`.
    - **`grid`:** The container behaves as a block element.
    - **`inline-grid`:** The container behaves as an inline element.
@@ -66,7 +66,8 @@ The CSS Grid Layout provides a two-dimensional layout system, which is ideal for
 #### 4.2.2. **Defining Grid Structure with Columns and Rows**
    - **`grid-template-columns`** and **`grid-template-rows`** define the grid structure by specifying column and row sizes.
    - You can use:
-     - **Fixed units:** `px`, `em`, `rem`
+     - **Fixed units:** `px`, `cm`, `mm`
+     - **responsive units:** ...
      - **Flexible units:** `fr` (fractional unit)
      - **Auto-adjusting:** `auto`, `min-content`, `max-content`
 
