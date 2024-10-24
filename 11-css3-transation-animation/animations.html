@@ -1,0 +1,46 @@
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+.circle {
+    width: 100px;
+    height: 100px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    position: relative;
+    animation: funCircle 6s infinite ease-in-out;
+}
+
+@keyframes funCircle {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        background-color: #e74c3c;
+    }
+    25% {
+        transform: translate(200px, -150px) scale(1.3) rotate(90deg);
+        background-color: #f39c12;
+    }
+    50% {
+        transform: translate(-200px, -150px) scale(0.8) rotate(180deg);
+        background-color: #8e44ad;
+    }
+    75% {
+        transform: translate(-200px, 150px) scale(1.2) rotate(270deg);
+        background-color: #27ae60;
+    }
+    100% {
+        transform: translate(0, 0) scale(1) rotate(360deg);
+        background-color: #e74c3c;
+    }
+}
+
+</style>
+<div class="circle"></div>
