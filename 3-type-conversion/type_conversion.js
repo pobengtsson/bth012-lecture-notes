@@ -24,10 +24,10 @@ let values = [
   NaN
 ]
 
-console.log("Value\t\ttoString\ttoNumber\ttoBoolean")
-for (let value of values) {
-  console.log(`${typeof(value)!=='string'?value:'"'+value+'"'}\t\t${value}\t\t${Number(value)}\t\t${!!value}`)
-}
+// console.log("Value\t\ttoString\ttoNumber\ttoBoolean")
+// for (let value of values) {
+//   console.log(`${typeof(value)!=='string'?value:'"'+value+'"'}\t\t${value}\t\t${Number(value)}\t\t${!!value}`)
+// }
 
 
 
