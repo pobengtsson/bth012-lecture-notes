@@ -94,7 +94,7 @@
    }
 
    let entries = Object.entries(car)
-   console.log(entries) 
+   console.log(entries)
    // Output: [['brand', 'Toyota'], ['model', 'Camry'], ['year', 2020]]
    ```
 

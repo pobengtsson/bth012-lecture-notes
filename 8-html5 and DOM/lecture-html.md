@@ -104,6 +104,15 @@
   document.body.appendChild(newDiv)
   ```
 
+- **Replacing elements**:
+  ```javascript
+  const oldElem = document.querySelector('.old-item')
+  const newElem = document.createElement('div')
+  newElem.className = 'new-item'
+  newElem.textContent = 'This element replaced the old one'
+  oldElem.replaceWith(newElem)
+  ```
+
 - **Modifying attributes**:
   ```javascript
   const link = document.querySelector('a')
