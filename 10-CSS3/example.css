@@ -15,3 +15,11 @@
   font-size: 3rem;
   background-color: blueviolet;
 }
+
+div {
+  border: 2px solid black;
+}
+
+.item2 {
+  background-color: chartreuse;
+}

@@ -54,6 +54,7 @@
 
 /** Solution:
  */
+// Generator function
 // function* passwordInputSimulation() {
 //   yield "jsIsCool"
 //   yield "openAI"
@@ -82,7 +83,14 @@
 //   }
 // }
 
-
+// About generators:
+// - yield only works inside generator functions.
+//   -> Using yield in a normal function is a syntax error.
+// - Arrow functions CANNOT be generators.
+// for...of iterates values until done === true;
+//   -> it ignores the final return value of the generator.
+// You CAN make async generators with async function* name(...).
+// If you don't need to pause/stream values, prefer a normal function that returns an array or object (simpler and more predictable).
 
 
 /************************************************************************/

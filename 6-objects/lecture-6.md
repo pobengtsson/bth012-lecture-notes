@@ -46,7 +46,7 @@
        add: function(a, b) {
            return a + b
        },
-       subtract: function(a, b) {
+       subtract(a, b) {
            return a - b
        }
    }

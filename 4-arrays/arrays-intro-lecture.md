@@ -130,6 +130,116 @@ colors.splice(2, 1, 'orange')
 console.log(colors) // Output: ['red', 'blue', 'orange', 'yellow', 'purple']
 ```
 
+### Iterators
+Iterable — built-in ES6 iterables include:
+- Array
+- String
+- Map
+- Set
+- TypedArray (Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array)
+- Generator objects (created by function*)
+- Any object implementing Symbol.iterator (custom iterables)
+
+(Note: some host-provided collections like NodeList/HTMLCollection are iterable in modern environments but are not part of the ES6 language spec.)
+
+### Iterators (ES6) — pedagogic examples
+
+#### 1) for...of with built-in iterables
+```javascript
+const arr = [10, 20, 30]
+for (const value of arr) {
+   console.log(value) // 10, 20, 30
+}
+
+const str = 'hi'
+for (const ch of str) {
+   console.log(ch) // 'h', 'i'
+}
+```
+
+#### 2) Manual consumption of an iterator
+```javascript
+const it = arr[Symbol.iterator]()   // get iterator object
+console.log(it.next()) // { value: 10, done: false }
+console.log(it.next()) // { value: 20, done: false }
+console.log(it.next()) // { value: 30, done: false }
+console.log(it.next()) // { value: undefined, done: true }
+```
+
+#### 3) Iterating Maps and Sets
+```javascript
+const m = new Map([['a',1], ['b',2]])
+for (const [key, value] of m.entries()) {
+   console.log(key, value) // 'a' 1  then 'b' 2
+}
+
+const s = new Set([1,2,3])
+for (const v of s.values()) console.log(v) // 1, 2, 3
+```
+
+#### 4) Custom iterable object (implements Symbol.iterator)
+```javascript
+const range = {
+   from: 1,
+   to: 3,
+   [Symbol.iterator]() {
+      let current = this.from
+      const last = this.to
+      return {
+         next() {
+            if (current <= last) {
+               return { value: current++, done: false }
+            } else {
+               return { value: undefined, done: true }
+            }
+         }
+      }
+   }
+}
+
+for (const n of range) console.log(n) // 1, 2, 3
+```
+
+#### 5) Using a generator as an iterator (concise custom iterable)
+```javascript
+function* rangeGen(start, end) {
+   for (let i = start; i <= end; i++) yield i
+}
+
+const g = rangeGen(1, 3)
+console.log(g.next()) // { value: 1, done: false }
+for (const n of rangeGen(1, 3)) console.log(n) // 1, 2, 3
+```
+
+Tips:
+- Any object with a Symbol.iterator method is iterable and works with for...of, spread ([...iterable]), and destructuring.
+- Iterators expose a standard { value, done } protocol — you can drive them manually or let language constructs consume them.
+- Generators are a convenient way to implement iterators without manually managing state.
+
+### Generators
+
+Generators are special ES6 functions (declared with function* or function * ) that return a generator object — an iterator you can drive manually. They let a function pause its execution at each yield, emit a value, and later resume from the same point when next() is called.
+
+Key points:
+- function* returns an **iterator** that implements the { value, done } protocol.
+- yield pauses execution and produces a value; next(value) resumes the generator and can inject a value back into the paused yield expression.
+- return ends the generator and sets done: true (optionally providing a final value).
+- Generators are iterable (usable with for...of, spread, destructuring) and are useful for lazy sequences, custom iterables, and managing stateful or incremental computations.
+
+Example:
+```javascript
+function* counter() {
+   yield 1
+   yield 2
+   return 3
+}
+const it = counter()
+console.log(it.next()) // { value: 1, done: false }
+console.log(it.next()) // { value: 2, done: false }
+console.log(it.next()) // { value: 3, done: true }
+```
+
+
 ### 5. **Summary**
    - Arrays in JavaScript are flexible and can store various types of data.
    - Built-in methods like **forEach**, **find**, **filter**, **map**, **slice**, and **splice** provide powerful ways to work with array data.
